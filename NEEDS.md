@@ -1,8 +1,14 @@
 # What this project needs from tessela
 
 Written while building the shell against the API we wanted, with mock data
-in `src/data/`. `types/tessela.d.ts` is the contract; this is the gap list
+in `src/data/`. `types/tessela.d.ts` is the contract; this was the gap list
 between it and tessela at commit `bd6a31d`.
+
+**Status:** everything in the tables below now exists in tessela, plus what
+building and validating the shell asked for along the way: `memo()`,
+packages (`@kit`, `[imports]`) and theme files, hidden surfaces costing
+nothing, devtools, and `--nested` previews. What is still open is at the
+end.
 
 ## Projects, not single files
 
@@ -59,7 +65,7 @@ services directory and restarts it when it dies. This project ships:
 | `power` | power profile (`powerprofilesctl`) |
 | `agenda` | calcure events |
 
-## Not covered yet (known)
+## Still open
 
 - Keyboard navigation in lists (arrow keys in the launcher): the vocabulary
   has no key events besides `Input`'s change and submit.
@@ -74,4 +80,5 @@ services directory and restarts it when it dies. This project ships:
 - Drag to reorder drawer cards (edit mode uses ↑/↓ buttons).
 - Time zones in the sandbox (the world clock uses fixed offsets).
 - Surfaces of the reference shell not rebuilt yet: control center,
-  notification center, OSD, HUD, capture, alt-tab, expo, polkit.
+  notification center, OSD, HUD, capture, alt-tab, expo, polkit agent, AI
+  panel, wallpaper.

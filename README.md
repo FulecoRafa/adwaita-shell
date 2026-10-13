@@ -20,4 +20,14 @@ The launcher is built only from `@kit`, the same pieces as the bar: see
 
 `NEEDS.md` lists what the framework had to gain for this project.
 
+## Running
+
+From `../tessela`, inside `nix develop`:
+
+```sh
+tessela run ../adwaita-shell --dev        # next to the desktop's bar (bottom edge)
+tessela run ../adwaita-shell --nested     # in a headless compositor of its own
+tessela run ../adwaita-shell --devtools   # then: tessela devtools --help
+```
+
 Type-check: `nix shell nixpkgs#typescript --command tsc -p .`
