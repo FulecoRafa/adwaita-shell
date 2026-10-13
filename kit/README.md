@@ -31,7 +31,7 @@ import * as apps from "@kit/data/apps";
 
 | | |
 |---|---|
-| `components/` | `Icon` (Phosphor glyphs), `AppTile` (bar tile or labelled grid tile), `StatusIcon` (with badge), `Chip`, `Tag`, `Gauge`, `Clock`, `Divider`, `Menu` (dbusmenu-style, submenus), `Card` + `Level` (three sizes), `Workspaces`, `SearchField`, `ListRow`; for panels: `HangingPanel` (a surface hanging from a bar), `Toggle`, `ToggleCard`, `SectionTitle`, `Meter` + `LevelRow` (draggable level with icon and percent), `SelectRow`, `DisclosureRow` (row that opens in place), `ActionButton`, `RoundButton`, `NotificationCard` |
+| `components/` | `Icon` (Phosphor glyphs), `AppTile` (bar tile or labelled grid tile), `StatusIcon` (with badge), `Chip`, `Tag`, `Gauge`, `Clock`, `Divider`, `Menu` (dbusmenu-style, submenus), `Card` + `Level` (three sizes), `MediaPlayer` (cover, titles, player chips, a wavy progress line that moves in the renderer and seeks), `Workspaces`, `SearchField`, `ListRow`; for panels: `HangingPanel` (a surface hanging from a bar), `Toggle`, `ToggleCard`, `SectionTitle`, `Meter` + `LevelRow` (draggable level with icon and percent), `SelectRow`, `DisclosureRow` (row that opens in place), `ActionButton`, `RoundButton`, `NotificationCard` |
 | `widgets/` | `Tray`: StatusNotifierItems with their menus (capability `tray`) |
 | `data/` | `apps`: installed apps, search ranked by use, pins, launch, icon of a window class (`apps`, `apps:launch`, `state`); `tray` |
 | `lib/` | `bind` (static-or-reactive props), `format` (pt-BR dates, durations), `glyphs` (Phosphor fill) |

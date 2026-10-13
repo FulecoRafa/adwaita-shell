@@ -19,7 +19,8 @@ export interface CardProps {
   size: CardSize;
   width: number;
   height: number;
-  title: Bind<string>;
+  /** Caption over the body; without one the body starts at the top (outside edit mode). */
+  title?: Bind<string>;
   /** Yellow link on the right of the title ("btop ↗"). */
   action?: Bind<string>;
   actionColor?: Bind<Color>;
@@ -41,23 +42,32 @@ function EditButton(p: { icon?: string; label?: string; onClick: On }) {
   );
 }
 
+function Header(p: CardProps & { editing: () => boolean }) {
+  const editing = p.editing;
+  return (
+    <Box gap={6} align="center">
+      <Box grow><Label text={p.title ?? ""} size={11} color="$textFaint" maxWidth={p.width - 120} /></Box>
+      {() =>
+        editing()
+          ? <Box gap={6}>
+              {(p.sizes?.length ?? 0) > 1 ? <EditButton label={sizeNames[p.size]} onClick={() => p.onCycleSize?.()} /> : null}
+              <EditButton icon="x" onClick={() => p.onRemove?.()} />
+            </Box>
+          : p.action
+            ? <Box onClick={p.onAction} hoverOpacity={0.8}><Label text={p.action} size={11} color={p.actionColor ?? "$yellow"} /></Box>
+            : null}
+    </Box>
+  );
+}
+
 /** A drawer card: caption, optional action link and the body below. */
 export function Card(p: CardProps) {
   const editing = () => read(p.editing ?? false);
   return (
     <Box direction="column" width={p.width} height={p.height} radius={22} bg="$raised" border={() => (editing() ? "$dim" : "#00000000")} padding={16} gap={p.gap ?? 10}>
-      <Box gap={6} align="center">
-        <Box grow><Label text={p.title} size={11} color="$textFaint" maxWidth={p.width - 120} /></Box>
-        {() =>
-          editing()
-            ? <Box gap={6}>
-                {(p.sizes?.length ?? 0) > 1 ? <EditButton label={sizeNames[p.size]} onClick={() => p.onCycleSize?.()} /> : null}
-                <EditButton icon="x" onClick={() => p.onRemove?.()} />
-              </Box>
-            : p.action
-              ? <Box onClick={p.onAction} hoverOpacity={0.8}><Label text={p.action} size={11} color={p.actionColor ?? "$yellow"} /></Box>
-              : null}
-      </Box>
+      {p.title !== undefined
+        ? <Header {...p} editing={editing} />
+        : () => (editing() ? <Header {...p} editing={editing} /> : null)}
       <Box direction="column" grow gap={p.gap ?? 10} opacity={() => (editing() ? 0.4 : 1)}>
         {p.children}
       </Box>
