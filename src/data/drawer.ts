@@ -1,7 +1,7 @@
 // Data for the drawer cards: plugins (media, weather, power) and values the
 // shell keeps in its state file (timers, tasks, draft, layout).
 
-import type { CardSize } from "../components/Card";
+import type { CardSize } from "@kit/components/Card";
 import { eventsOn as agenda } from "./status";
 
 export interface Player {

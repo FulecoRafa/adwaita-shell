@@ -1,5 +1,5 @@
-import { Card, Level, type CardProps } from "../Card";
-import { Icon } from "../Icon";
+import { Card, Level, type CardProps } from "@kit/components/Card";
+import { Icon } from "@kit/components/Icon";
 
 export interface PlayerData {
   identity: string;

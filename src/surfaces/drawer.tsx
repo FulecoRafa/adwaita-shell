@@ -3,15 +3,15 @@
 // two-column grid with three sizes: small (1×1), wide (2×1), large (2×2).
 // Edit mode cycles sizes, removes, reorders and adds cards.
 
-import { cardBox, type CardSize } from "../components/Card";
-import { Chip } from "../components/Chip";
-import { Icon } from "../components/Icon";
-import { CalendarCard } from "../components/cards/CalendarCard";
-import { EnergyCard } from "../components/cards/EnergyCard";
-import { AiCard, NetworkCard, NotesCard, TimersCard, WorldClockCard } from "../components/cards/ListCards";
-import { MediaCard } from "../components/cards/MediaCard";
-import { SystemCard } from "../components/cards/SystemCard";
-import { WeatherCard } from "../components/cards/WeatherCard";
+import { cardBox, type CardSize } from "@kit/components/Card";
+import { Chip } from "@kit/components/Chip";
+import { Icon } from "@kit/components/Icon";
+import { CalendarCard } from "../cards/CalendarCard";
+import { EnergyCard } from "../cards/EnergyCard";
+import { AiCard, NetworkCard, NotesCard, TimersCard, WorldClockCard } from "../cards/ListCards";
+import { MediaCard } from "../cards/MediaCard";
+import { SystemCard } from "../cards/SystemCard";
+import { WeatherCard } from "../cards/WeatherCard";
 import * as data from "../data/drawer";
 import { launch } from "../data/desktop";
 import { close, panel } from "../data/shell";

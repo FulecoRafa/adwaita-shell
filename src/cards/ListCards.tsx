@@ -1,9 +1,9 @@
 // Cards that are mostly lists: timers, tasks, AI limits, network and
 // world clock. Small shows the first item; bigger sizes show more.
 
-import { Card, Level, type CardProps } from "../Card";
-import { Icon } from "../Icon";
-import { duration, hm, usageColor } from "../../lib/format";
+import { Card, Level, type CardProps } from "@kit/components/Card";
+import { Icon } from "@kit/components/Icon";
+import { duration, hm, usageColor } from "@kit/lib/format";
 
 type Base = Omit<CardProps, "title" | "children">;
 const rows = (size: Base["size"]) => (size === "large" ? 7 : size === "wide" ? 3 : 2);

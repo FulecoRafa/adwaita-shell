@@ -1,6 +1,6 @@
-import { Card, Level, type CardProps } from "../Card";
-import { Icon } from "../Icon";
-import { duration } from "../../lib/format";
+import { Card, Level, type CardProps } from "@kit/components/Card";
+import { Icon } from "@kit/components/Icon";
+import { duration } from "@kit/lib/format";
 
 export interface EnergyProps extends Omit<CardProps, "title" | "children"> {
   battery: () => Battery | null;

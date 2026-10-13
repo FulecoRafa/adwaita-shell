@@ -1,6 +1,6 @@
-import { Icon } from "./Icon";
-import { duration, usageColor } from "../lib/format";
-import { map } from "../lib/bind";
+import { Icon } from "@kit/components/Icon";
+import { duration, usageColor } from "@kit/lib/format";
+import { map } from "@kit/lib/bind";
 
 export interface AiChipProps {
   usage: () => { claude: { percent: number; resetsIn: number }; codex: { percent: number; resetsIn: number } } | null;

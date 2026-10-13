@@ -1,6 +1,6 @@
 import * as tray from "../data/tray";
-import { Menu } from "./Menu";
-import { Divider } from "./Divider";
+import { Menu } from "../components/Menu";
+import { Divider } from "../components/Divider";
 
 /**
  * The app tray (StatusNotifierItem: Discord, Steam, nm-applet...). Self

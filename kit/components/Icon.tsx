@@ -1,4 +1,4 @@
-import { glyphs } from "../lib/icons";
+import { glyphs } from "../lib/glyphs";
 import { map } from "../lib/bind";
 
 /** A Phosphor (fill) glyph by name, e.g. "wifi-high". */

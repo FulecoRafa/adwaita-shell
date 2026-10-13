@@ -1,4 +1,4 @@
-import { Card, Level, type CardProps } from "../Card";
+import { Card, Level, type CardProps } from "@kit/components/Card";
 
 export interface Meter {
   label: string;

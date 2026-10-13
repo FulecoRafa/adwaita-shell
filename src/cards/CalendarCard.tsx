@@ -1,5 +1,5 @@
-import { Card, type CardProps } from "../Card";
-import { monthTitle, weekdayInitials } from "../../lib/format";
+import { Card, type CardProps } from "@kit/components/Card";
+import { monthTitle, weekdayInitials } from "@kit/lib/format";
 
 export interface CalendarEvent {
   title: string;

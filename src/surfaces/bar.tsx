@@ -1,15 +1,15 @@
 // The top bar: logo, workspaces, apps, AI usage, CPU, tray, keyboard layout,
 // status icons, agenda and clock. Panels hang from it.
 
-import { AppTile } from "../components/AppTile";
+import { AppTile } from "@kit/components/AppTile";
 import { AiChip } from "../components/AiChip";
-import { Clock } from "../components/Clock";
-import { Divider } from "../components/Divider";
-import { Gauge } from "../components/Gauge";
-import { StatusIcon } from "../components/StatusIcon";
-import { Tag } from "../components/Tag";
-import { Tray } from "../components/Tray";
-import { Workspaces } from "../components/Workspaces";
+import { Clock } from "@kit/components/Clock";
+import { Divider } from "@kit/components/Divider";
+import { Gauge } from "@kit/components/Gauge";
+import { StatusIcon } from "@kit/components/StatusIcon";
+import { Tag } from "@kit/components/Tag";
+import { Tray } from "@kit/widgets/Tray";
+import { Workspaces } from "@kit/components/Workspaces";
 import * as desktop from "../data/desktop";
 import * as status from "../data/status";
 import { openControl, panel, toggle } from "../data/shell";

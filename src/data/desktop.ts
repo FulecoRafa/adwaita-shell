@@ -1,5 +1,6 @@
 // Workspaces, windows and pinned apps, from the hyprland and apps modules.
 
+import * as installed from "@kit/data/apps";
 import { toggle, type Panel } from "./shell";
 
 export const workspaceCount = 6;
@@ -11,7 +12,7 @@ export const switchTo = (id: number) => hyprland.dispatch(`workspace ${id}`);
 /** -1: previous workspace (wheel up), 1: next. */
 export const cycleWorkspace = (delta: number) => hyprland.dispatch(`workspace r${delta < 0 ? "-" : "+"}1`);
 export const focusWindow = (address: string) => hyprland.dispatch(`focuswindow address:${address}`);
-export const launch = (command: string[] | string) => apps.launch(command);
+export const launch = installed.launch;
 
 /** A pinned app: a command to launch, or a panel to toggle. */
 export interface Pinned {
@@ -41,18 +42,15 @@ export const tuiIcons: Record<string, string> = {
 
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** Pinned by the user (from the launcher): "tui:name" or a desktop entry id. */
-export const userPins = shared<string[]>("pinned", [], { store: true });
-
 /** Built-in pins with the user's in the middle, like the reference bar. */
 export function pinned(): Pinned[] {
-  const user: Pinned[] = userPins().map((id): Pinned => {
+  const user: Pinned[] = installed.pins().map((id): Pinned => {
     if (id.startsWith("tui:")) {
       const name = id.slice(4);
       return { key: id, icon: tuiIcons[name] ?? "terminal-window", color: "$green", match: new RegExp(`^fuleco\\.${escape(name)}$`), command: ["ghostty", `--class=fuleco.${name}`, "-e", name] };
     }
     const base = id.replace(/\.desktop$/, "");
-    return { key: id, icon: "app-window", image: appIcon(base), color: "$cyan", match: new RegExp(`^${escape(base)}$`, "i"), command: base };
+    return { key: id, icon: "app-window", image: installed.iconFor(base), color: "$cyan", match: new RegExp(`^${escape(base)}$`, "i"), command: base };
   });
   return [...builtin.slice(0, 3), ...user, ...builtin.slice(3)];
 }
@@ -87,15 +85,5 @@ export function activate(p: Pinned) {
 
 export const activateClass = (cls: string) => cycle(clients().filter((c) => c.class === cls));
 
-// Lookups go to the host once per class; bindings re-run often.
-const icons = new Map<string, string>();
-
 /** Theme icon for a window class; "" when there is none. */
-export function appIcon(cls: string): string {
-  let icon = icons.get(cls);
-  if (icon === undefined) {
-    icon = apps.lookup(cls)?.icon || apps.icon(cls.toLowerCase());
-    icons.set(cls, icon);
-  }
-  return icon;
-}
+export const appIcon = installed.iconFor;
