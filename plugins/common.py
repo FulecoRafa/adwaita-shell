@@ -39,6 +39,7 @@ async def poll(read: Callable[[], Awaitable[Any]], interval: float, wake: asynci
 async def follow(cmd: list[str], on_line: Callable[[str], None], restart: float = 5.0) -> None:
     """Run a long-lived command and hand each output line to `on_line`."""
     while True:
+        proc = None
         try:
             proc = await asyncio.create_subprocess_exec(
                 *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL
@@ -49,4 +50,8 @@ async def follow(cmd: list[str], on_line: Callable[[str], None], restart: float 
             await proc.wait()
         except OSError as e:
             print(f"{cmd[0]}: {e}", file=sys.stderr)
+        finally:
+            # Cancelled (the plugin is stopping): do not leave it running.
+            if proc and proc.returncode is None:
+                proc.kill()
         await asyncio.sleep(restart)
