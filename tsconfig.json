@@ -1,0 +1,17 @@
+{
+  // Editor and type-check only: tessela transpiles the sources itself.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "strict": true,
+    "noEmit": true,
+    "lib": ["ES2022"],
+    "types": [],
+    "skipLibCheck": true
+  },
+  "include": ["types/*.d.ts", "src/**/*.ts", "src/**/*.tsx"]
+}

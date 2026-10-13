@@ -1,0 +1,99 @@
+# adwaita-shell: the reference Quickshell config rebuilt as a tessela project.
+# Each surface is an entry (like a page); src/components is the component
+# library they share; src/data is the only place that touches modules.
+
+name = "adwaita-shell"
+font = "CaskaydiaCove Nerd Font"
+
+# One extension per surface. All of them share `shared(...)` state.
+[surfaces.bar]
+entry = "src/surfaces/bar.tsx"
+capabilities = ["context", "state", "timer", "hyprland", "hyprland:dispatch", "system", "apps", "apps:launch", "tray",
+                "service:audio", "service:network", "service:notifications", "service:ai"]
+
+[surfaces.drawer]
+entry = "src/surfaces/drawer.tsx"
+capabilities = ["context", "state", "timer", "system", "apps:launch", "service:media", "service:weather", "service:network", "service:ai"]
+
+# Services this project ships. The runner starts them and restarts them if
+# they die; each one serves <runtime dir>/<name>.sock.
+[plugins.audio]
+command = ["python3", "plugins/audio.py"]
+
+[plugins.network]
+command = ["python3", "plugins/network.py"]
+
+[plugins.notifications]
+command = ["python3", "plugins/notifications.py"]
+
+[plugins.ai]
+command = ["python3", "plugins/ai.py"]
+
+[plugins.media]
+command = ["python3", "plugins/media.py"]
+
+[plugins.weather]
+command = ["python3", "plugins/weather.py"]
+
+# Theme tokens: style props take "$name". The scheme follows ctx.colorScheme().
+[theme.dark]
+desk = "#1A1F29"
+surface = "#232834"
+surfaceBorder = "#2E3542"
+raised = "#2C333F"
+raisedAlt = "#2A303B"
+hover = "#2A303C"
+track = "#333B47"
+divider = "#333B49"
+sunken = "#1B2028"
+dim = "#4A5262"
+dimmer = "#3A4250"
+onAccent = "#1F2430"
+text = "#CCCAC2"
+textBright = "#E6E1CF"
+textMuted = "#8A9199"
+textFaint = "#707A8C"
+textGhost = "#5C6773"
+yellow = "#FFCC66"
+cyan = "#5CCFE6"
+green = "#BAE67E"
+purple = "#DFBFFF"
+orange = "#FFA759"
+red = "#FF6666"
+greenTint = "#2F3A33"
+purpleTint = "#3A3242"
+cyanTint = "#2A3A42"
+redTint = "#3A2A2E"
+yellowTint = "#3A3528"
+orangeTint = "#3A3029"
+
+[theme.light]
+desk = "#F0F0F0"
+surface = "#FCFCFC"
+surfaceBorder = "#E1E3E6"
+raised = "#F0F1F2"
+raisedAlt = "#F3F4F5"
+hover = "#EBEDEF"
+track = "#E1E3E6"
+divider = "#E1E3E6"
+sunken = "#F3F4F5"
+dim = "#BAC0C6"
+dimmer = "#D3D7DB"
+onAccent = "#FCFCFC"
+text = "#5C6166"
+textBright = "#2B3036"
+textMuted = "#787B80"
+textFaint = "#8A9199"
+textGhost = "#ADAEB1"
+yellow = "#F2AE49"
+cyan = "#399EE6"
+green = "#86B300"
+purple = "#A37ACC"
+orange = "#FA8D3E"
+red = "#F07171"
+greenTint = "#E8F0D9"
+purpleTint = "#EFE6F7"
+cyanTint = "#E1EFF9"
+redTint = "#FBE6E6"
+yellowTint = "#FBF0DE"
+orangeTint = "#FDEBDD"
