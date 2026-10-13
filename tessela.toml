@@ -35,6 +35,12 @@ command = ["python3", "plugins/media.py"]
 [plugins.weather]
 command = ["python3", "plugins/weather.py"]
 
+[plugins.power]
+command = ["python3", "plugins/power.py"]
+
+[plugins.agenda]
+command = ["python3", "plugins/agenda.py"]
+
 # Theme tokens: style props take "$name". The scheme follows ctx.colorScheme().
 [theme.dark]
 desk = "#1A1F29"

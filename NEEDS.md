@@ -53,12 +53,19 @@ services directory and restarts it when it dies. This project ships:
 | `audio` | default sink volume/mute (`wpctl`) |
 | `network` | wifi, wired and bluetooth state (`nmcli`, `bluetoothctl`) |
 | `notifications` | count and do-not-disturb from the running notification server |
-| `ai` | Claude and Codex quota windows |
+| `ai` | Claude and Codex quota windows (`ai-usage show`) |
 | `media` | MPRIS player (`playerctl`) |
-| `weather` | current conditions and next hours |
+| `weather` | current conditions and next hours (wttr.in, cached) |
+| `power` | power profile (`powerprofilesctl`) |
+| `agenda` | calcure events |
 
 ## Not covered yet (known)
 
+- Notifications: the desktop's shell owns `org.freedesktop.Notifications`, so
+  the plugin observes the bus and counts what arrives after it starts. Taking
+  over the server needs a D-Bus binding the Python stdlib lacks.
+- Plugins run `python3` from `PATH` (the dev shell has it; the desktop
+  session on NixOS does not).
 - Animations (width/color transitions, the pulsing AI chip, sliding panels).
 - Drag to reorder drawer cards (edit mode uses ↑/↓ buttons).
 - Time zones in the sandbox (the world clock uses fixed offsets).
