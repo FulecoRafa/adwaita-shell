@@ -26,6 +26,11 @@ entry = "src/surfaces/launcher.tsx"
 capabilities = ["context", "state", "apps", "apps:launch"]
 
 # Panels hanging from the bar; `panel` (shared state) says which one is open.
+[surfaces.control]
+entry = "src/surfaces/control.tsx"
+capabilities = ["context", "state", "timer", "system", "apps:launch",
+                "service:audio", "service:network", "service:power", "service:brightness", "service:notifications"]
+
 [surfaces.notifications]
 entry = "src/surfaces/notifications.tsx"
 capabilities = ["context", "state", "apps", "service:notifications"]

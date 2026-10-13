@@ -17,6 +17,8 @@ export interface Net {
   /** 0..1 */
   strength: number;
   ssid: string;
+  /** IPv4 address on the wifi interface, "" if none. */
+  ip: string;
   bluetooth: { present: boolean; enabled: boolean; connected: string[] };
 }
 export const net = () => use("network").subscribe<Net>("state")();
@@ -24,6 +26,8 @@ export const net = () => use("network").subscribe<Net>("state")();
 export interface Audio {
   volume: number;
   muted: boolean;
+  micVolume: number;
+  micMuted: boolean;
 }
 export const audio = () => use("audio").subscribe<Audio>("state")();
 export const changeVolume = (delta: number) => use("audio").call("change", { delta });
