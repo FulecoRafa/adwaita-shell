@@ -274,6 +274,10 @@ interface ImageProps extends Keyed {
   src: Bind<string>;
   size: Bind<number>;
   opacity?: Bind<number>;
+  /** Rounded corners that clip the picture. */
+  radius?: Bind<number | [number, number, number, number]>;
+  /** "contain" (default) shows all of it; "cover" fills the square, cropping. */
+  fit?: Bind<"contain" | "cover">;
 }
 declare function Image(props: ImageProps): ViewNode;
 
@@ -292,7 +296,12 @@ declare function Ring(props: RingProps): ViewNode;
  * A horizontal level set by clicking, dragging or scrolling (volume,
  * brightness). The renderer moves it under the pointer while dragging and
  * reports whole percents; set `value` back from `onChange`. Without
- * `onChange` it is a plain meter.
+ * `onChange` or `onCommit` it is a plain meter.
+ *
+ * It can also move by itself, drawn by the renderer at frame rate with no
+ * code of yours running (media progress): `rate` advances `value` from `at`,
+ * and `wave` draws the filled part as a moving sine line, the rest as a flat
+ * `track`, with a pill at the level.
  */
 interface SliderProps extends Keyed {
   /** 0..1 */
@@ -302,9 +311,21 @@ interface SliderProps extends Keyed {
   thickness?: Bind<number>;
   color?: Bind<Color>;
   track?: Bind<Color>;
-  /** What one wheel notch adds or takes; 0.05 by default. */
+  /** What one wheel notch adds or takes; 0.05 by default (only with `onChange`). */
   step?: Bind<number>;
+  /** `value` units per second the level advances by itself (0: still). */
+  rate?: Bind<number>;
+  /** When `value` was true, ms since the epoch; default: when the renderer got it. */
+  at?: Bind<number>;
+  /** Amplitude in px of the wave over the filled part; 0 flattens it (eased). It moves while not flat. */
+  wave?: Bind<number>;
+  /** Px per period, 26 by default. */
+  wavelength?: Bind<number>;
+  /** Radians per second, 7 by default. */
+  speed?: Bind<number>;
   onChange?: On<{ value: number }>;
+  /** Once, on release after a click or drag (seeking); the slider shows it until `value` changes. */
+  onCommit?: On<{ value: number }>;
 }
 declare function Slider(props: SliderProps): ViewNode;
 
