@@ -88,7 +88,12 @@ class Service:
                 except json.JSONDecodeError as e:
                     client.send({"id": 0, "error": f"bad request: {e}"})
                     continue
-                await self._dispatch(client, req)
+                # Calls may take long (connecting to a network): they run beside
+                # the connection, so its other requests are not held up.
+                if req.get("op") == "call":
+                    asyncio.ensure_future(self._dispatch(client, req))
+                else:
+                    await self._dispatch(client, req)
                 await writer.drain()
         except ConnectionError:
             pass
