@@ -34,6 +34,12 @@ end.
 | `Image`: `asset:`, `icon:` (theme lookup) and module-provided sources, PNG and SVG | logo, app icons, tray icons, album covers |
 | `Ring` with centered children | CPU gauge |
 | `Popup`: anchored below its parent, closes on outside click | tray menu |
+| Overlays let clicks on the bar through (input region minus reserved space) | a bar button switches or closes the open panel, like the reference |
+| `Slider`: click, drag and wheel set a 0..1 level | volume, microphone, brightness, per-app volume |
+| `Box.maxHeight` (with `scroll`) | wifi and bluetooth lists that grow, then scroll |
+| `Label.wrap` / `lines` | notification bodies, error messages |
+| `Input.secret` | wifi password |
+| The innermost clickable box takes the click | close button on a clickable notification card |
 | `Input`: one line of text, `onChange`/`onSubmit`, keyboard focus | task draft; the launcher's search field later |
 | Right and middle click | tray items (menu, secondary action) |
 | Theme tokens (`"$surface"`) resolved per color scheme | dark/light without rebinding every color prop |
@@ -56,13 +62,14 @@ services directory and restarts it when it dies. This project ships:
 
 | Plugin | Source |
 |---|---|
-| `audio` | default sink volume/mute (`wpctl`) |
-| `network` | wifi, wired and bluetooth state (`nmcli`, `bluetoothctl`) |
-| `notifications` | count and do-not-disturb from the running notification server |
-| `ai` | Claude and Codex quota windows (`ai-usage show`) |
+| `audio` | volume and mute of the default sink and source, outputs, inputs and app streams (`wpctl`, `pw-dump`); set default, per-app volume |
+| `network` | wifi, wired and bluetooth state, wifi networks, bluetooth devices (`nmcli`, `bluetoothctl`); radios on/off, connect/disconnect/forget, pair, discovery |
+| `notifications` | history (`busctl monitor` on the bus), dismiss and clear through the running server, do-not-disturb |
+| `ai` | Claude and Codex quota windows and a 7-day history of daily peaks (`ai-usage show`) |
+| `brightness` | backlight level (sysfs, `brightnessctl`) |
 | `media` | MPRIS player (`playerctl`) |
 | `weather` | current conditions and next hours (wttr.in, cached) |
-| `power` | power profile (`powerprofilesctl`) |
+| `power` | power profile (`powerprofilesctl`), caffeine (`systemd-inhibit --what=idle`) |
 | `agenda` | calcure events |
 
 ## Still open
@@ -72,13 +79,24 @@ services directory and restarts it when it dies. This project ships:
 - The launcher is minimal next to the reference (no scopes, calculator,
   emoji, terminal apps).
 - Notifications: the desktop's shell owns `org.freedesktop.Notifications`, so
-  the plugin observes the bus and counts what arrives after it starts. Taking
-  over the server needs a D-Bus binding the Python stdlib lacks.
+  the plugin observes the bus: the history starts when it starts, actions
+  cannot be invoked (only the server can emit `ActionInvoked`), popups and
+  do-not-disturb stay the desktop shell's. Taking over the server needs a
+  D-Bus binding the Python stdlib lacks.
+- A surface whose render runs past the guest's CPU budget (50 ms) while it
+  hot-reloads with the panel open crashed the whole process (SIGSEGV in a
+  QuickJS finalizer, `JS_Call` from a worker). Not reproduced in a unit test
+  yet; the control center avoids it by listing at most 24 networks.
+- Hover-only content (the notification card's close button, the power
+  buttons' captions) and focus styles (the password field's yellow border):
+  shown always, or as a tooltip.
+- Bar app tiles: right click opens the App Exposé in the reference; there is
+  no Expo surface yet.
 - Plugins run `python3` from `PATH` (the dev shell has it; the desktop
   session on NixOS does not).
 - Animations (width/color transitions, the pulsing AI chip, sliding panels).
 - Drag to reorder drawer cards (edit mode uses ↑/↓ buttons).
 - Time zones in the sandbox (the world clock uses fixed offsets).
-- Surfaces of the reference shell not rebuilt yet: control center,
-  notification center, OSD, HUD, capture, alt-tab, expo, polkit agent, AI
-  panel, wallpaper.
+- Surfaces of the reference shell not rebuilt yet: notification popups,
+  OSD, HUD, capture, alt-tab, expo, monitor manager, polkit agent,
+  wallpaper.
