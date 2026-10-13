@@ -35,7 +35,7 @@ export function Tray(p: { iconSize?: number; gap?: number; divider?: boolean }) 
           <Popup open={() => open() === item.id} onDismiss={() => open.set("")} width={240}>
             <Menu
               title={item.title || item.id}
-              entries={tray.menu(item.id)}
+              entries={() => tray.menu(item.id)()}
               onTrigger={(e) => {
                 tray.trigger(item.id, e.id);
                 open.set("");

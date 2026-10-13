@@ -3,7 +3,8 @@ import { read } from "../lib/bind";
 
 export interface MenuProps {
   title: Bind<string>;
-  entries: Signal<MenuEntry[] | null>;
+  /** Read only while the menu is shown. */
+  entries: () => MenuEntry[] | null;
   /** A leaf entry was clicked; the menu does not close itself. */
   onTrigger: (entry: MenuEntry) => void;
 }
