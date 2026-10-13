@@ -218,6 +218,8 @@ interface BoxProps extends Keyed, Events {
   height?: Bind<number | `${number}%`>;
   minWidth?: Bind<number>;
   maxWidth?: Bind<number>;
+  /** Cap the height (with `scroll`, a list that grows up to it, then scrolls). */
+  maxHeight?: Bind<number>;
   /** Take the remaining space along the parent's direction. */
   grow?: Bind<boolean>;
   bg?: Bind<Color>;
@@ -246,6 +248,8 @@ interface InputProps extends Keyed {
   color?: Bind<Color>;
   /** Take keyboard focus when the surface opens. */
   autofocus?: boolean;
+  /** Drawn as dots (passwords). */
+  secret?: Bind<boolean>;
 }
 declare function Input(props: InputProps): ViewNode;
 
@@ -258,6 +262,10 @@ interface LabelProps extends Keyed {
   font?: Bind<string>;
   /** Cut with an ellipsis past this width. */
   maxWidth?: Bind<number>;
+  /** Wrap to the parent's width (notification bodies). */
+  wrap?: Bind<boolean>;
+  /** With `wrap`: at most this many lines, then an ellipsis. */
+  lines?: Bind<number>;
 }
 declare function Label(props: LabelProps): ViewNode;
 
@@ -279,6 +287,26 @@ interface RingProps extends Keyed {
   children?: Child;
 }
 declare function Ring(props: RingProps): ViewNode;
+
+/**
+ * A horizontal level set by clicking, dragging or scrolling (volume,
+ * brightness). The renderer moves it under the pointer while dragging and
+ * reports whole percents; set `value` back from `onChange`. Without
+ * `onChange` it is a plain meter.
+ */
+interface SliderProps extends Keyed {
+  /** 0..1 */
+  value: Bind<number>;
+  /** The parent's width by default. */
+  width?: Bind<number | `${number}%`>;
+  thickness?: Bind<number>;
+  color?: Bind<Color>;
+  track?: Bind<Color>;
+  /** What one wheel notch adds or takes; 0.05 by default. */
+  step?: Bind<number>;
+  onChange?: On<{ value: number }>;
+}
+declare function Slider(props: SliderProps): ViewNode;
 
 /** Floating content anchored below its parent (menus). Closes on outside click. */
 interface PopupProps extends Keyed {
@@ -302,7 +330,10 @@ interface SurfaceProps extends Keyed {
   /** Space reserved so windows do not cover it. */
   exclusive?: number;
   visible?: Bind<boolean>;
-  /** Clicking outside the surface calls this (panels). */
+  /**
+   * Clicking outside the surface calls this (panels). Clicks on the space
+   * other surfaces reserve (the bar) reach them instead.
+   */
   onDismiss?: On;
   children?: Child;
 }
