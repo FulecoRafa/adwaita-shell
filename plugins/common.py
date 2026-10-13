@@ -55,3 +55,17 @@ async def follow(cmd: list[str], on_line: Callable[[str], None], restart: float 
             if proc and proc.returncode is None:
                 proc.kill()
         await asyncio.sleep(restart)
+
+
+async def run_status(*cmd: str, timeout: float = 30.0) -> tuple[bool, str]:
+    """(succeeded, stdout or the error message) of `cmd`, for actions that report why they failed."""
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+        out, err = await asyncio.wait_for(proc.communicate(), timeout)
+    except (OSError, asyncio.TimeoutError) as e:
+        return False, str(e) or "timeout"
+    if proc.returncode == 0:
+        return True, out.decode(errors="replace")
+    return False, (err or out).decode(errors="replace").strip()
