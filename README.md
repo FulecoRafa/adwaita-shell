@@ -25,7 +25,7 @@ The launcher is built only from `@kit`, the same pieces as the bar: see
 From `../tessela`, inside `nix develop`:
 
 ```sh
-tessela run ../adwaita-shell --dev        # next to the desktop's bar (bottom edge)
+tessela run ../adwaita-shell --dev        # below the desktop's bar, reserving nothing
 tessela run ../adwaita-shell --nested     # in a headless compositor of its own
 tessela run ../adwaita-shell --devtools   # then: tessela devtools --help
 ```
