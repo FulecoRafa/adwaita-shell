@@ -21,6 +21,10 @@ entry = "src/surfaces/drawer.tsx"
 capabilities = ["context", "state", "timer", "system", "apps:launch",
                 "service:media", "service:weather", "service:network", "service:ai", "service:power", "service:agenda"]
 
+[surfaces.launcher]
+entry = "src/surfaces/launcher.tsx"
+capabilities = ["context", "state", "apps", "apps:launch"]
+
 # Services this project ships. The runner starts them and restarts them if
 # they die; each one serves <runtime dir>/<name>.sock.
 [plugins.audio]

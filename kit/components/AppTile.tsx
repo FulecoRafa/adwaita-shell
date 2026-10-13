@@ -12,6 +12,8 @@ export interface AppTileProps {
   /** Tile edge in px (34 in the bar; bigger in a launcher grid). */
   size?: number;
   tooltip?: Bind<string>;
+  /** A name under the tile (launcher grids); none in the bar. */
+  label?: Bind<string>;
   onClick?: On;
   onRightClick?: On;
 }
@@ -23,7 +25,7 @@ export function AppTile(p: AppTileProps) {
   const accent = p.accent ?? "$cyan";
   const active = p.active ?? false;
   const image = p.image ?? "";
-  return (
+  const tile = (
     <Box
       width={size}
       height={size}
@@ -50,6 +52,13 @@ export function AppTile(p: AppTileProps) {
           return read(active) ? accent : "$dim";
         }}
       />
+    </Box>
+  );
+  if (p.label === undefined) return tile;
+  return (
+    <Box direction="column" align="center" gap={6} width={Math.round(size * 2.2)}>
+      {tile}
+      <Label text={p.label} size={11} color="$text" maxWidth={Math.round(size * 2.2)} />
     </Box>
   );
 }

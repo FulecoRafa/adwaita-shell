@@ -31,7 +31,7 @@ import * as apps from "@kit/data/apps";
 
 | | |
 |---|---|
-| `components/` | `Icon` (Phosphor glyphs), `AppTile` (bar tile), `StatusIcon` (with badge), `Chip`, `Tag`, `Gauge`, `Clock`, `Divider`, `Menu` (dbusmenu-style, submenus), `Card` + `Level` (three sizes), `Workspaces` |
+| `components/` | `Icon` (Phosphor glyphs), `AppTile` (bar tile or labelled grid tile), `StatusIcon` (with badge), `Chip`, `Tag`, `Gauge`, `Clock`, `Divider`, `Menu` (dbusmenu-style, submenus), `Card` + `Level` (three sizes), `Workspaces`, `SearchField`, `ListRow` |
 | `widgets/` | `Tray`: StatusNotifierItems with their menus (capability `tray`) |
 | `data/` | `apps`: installed apps, search ranked by use, pins, launch, icon of a window class (`apps`, `apps:launch`, `state`); `tray` |
 | `lib/` | `bind` (static-or-reactive props), `format` (pt-BR dates, durations), `glyphs` (Phosphor fill) |

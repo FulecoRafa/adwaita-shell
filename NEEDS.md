@@ -61,6 +61,10 @@ services directory and restarts it when it dies. This project ships:
 
 ## Not covered yet (known)
 
+- Keyboard navigation in lists (arrow keys in the launcher): the vocabulary
+  has no key events besides `Input`'s change and submit.
+- The launcher is minimal next to the reference (no scopes, calculator,
+  emoji, terminal apps).
 - Notifications: the desktop's shell owns `org.freedesktop.Notifications`, so
   the plugin observes the bus and counts what arrives after it starts. Taking
   over the server needs a D-Bus binding the Python stdlib lacks.
@@ -70,4 +74,4 @@ services directory and restarts it when it dies. This project ships:
 - Drag to reorder drawer cards (edit mode uses ↑/↓ buttons).
 - Time zones in the sandbox (the world clock uses fixed offsets).
 - Surfaces of the reference shell not rebuilt yet: control center,
-  notification center, launcher, OSD, HUD, capture, alt-tab, expo, polkit.
+  notification center, OSD, HUD, capture, alt-tab, expo, polkit.
