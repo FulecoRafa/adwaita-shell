@@ -39,6 +39,10 @@ capabilities = ["context", "state", "apps", "service:notifications"]
 entry = "src/surfaces/ai.tsx"
 capabilities = ["context", "state", "service:ai"]
 
+[surfaces.power]
+entry = "src/surfaces/power.tsx"
+capabilities = ["context", "state", "timer", "apps:launch"]
+
 # Services this project ships. The runner starts them and restarts them if
 # they die; each one serves <runtime dir>/<name>.sock.
 [plugins.audio]
