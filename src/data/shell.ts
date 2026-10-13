@@ -18,3 +18,19 @@ export function openControl(tab: string) {
   controlTab.set(tab);
   panel.set("control");
 }
+
+/**
+ * `visible` for a panel's surface that also runs `onOpen` / `onClose` when
+ * it opens or closes (scan networks, refresh usage, stop a discovery).
+ */
+export function shownAs(name: Panel, onOpen?: () => void, onClose?: () => void): () => boolean {
+  let was = false;
+  return () => {
+    const now = panel() === name;
+    if (now !== was) {
+      was = now;
+      (now ? onOpen : onClose)?.();
+    }
+    return now;
+  };
+}

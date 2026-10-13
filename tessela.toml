@@ -25,6 +25,11 @@ capabilities = ["context", "state", "timer", "system", "apps:launch",
 entry = "src/surfaces/launcher.tsx"
 capabilities = ["context", "state", "apps", "apps:launch"]
 
+# Panels hanging from the bar; `panel` (shared state) says which one is open.
+[surfaces.notifications]
+entry = "src/surfaces/notifications.tsx"
+capabilities = ["context", "state", "apps", "service:notifications"]
+
 # Services this project ships. The runner starts them and restarts them if
 # they die; each one serves <runtime dir>/<name>.sock.
 [plugins.audio]
