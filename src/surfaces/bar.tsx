@@ -53,12 +53,18 @@ function Apps() {
       />
     );
   };
+  // Which tiles exist changes rarely; window titles change all the time
+  // (a terminal's spinner). The memo keeps the tiles from being rebuilt
+  // on every title change: it only reports when the set of apps changes.
+  const tiles = memo(() => ({ pins: desktop.pinned().map((p) => p.key), extra: desktop.extraApps() }));
   return (
     <Box gap={6} align="center">
       {() => {
-        const all = desktop.pinned();
-        const fixed = all.length - 2; // launcher and drawer go last
-        return [...all.slice(0, fixed).map(pinnedTile), ...desktop.extraApps().map(extraTile), ...all.slice(fixed).map(pinnedTile)];
+        const { pins, extra } = tiles();
+        const byKey = new Map(desktop.pinned().map((p) => [p.key, p]));
+        const tile = (key: string) => pinnedTile(byKey.get(key)!);
+        const fixed = pins.length - 2; // launcher and drawer go last
+        return [...pins.slice(0, fixed).map(tile), ...extra.map(extraTile), ...pins.slice(fixed).map(tile)];
       }}
     </Box>
   );
@@ -88,6 +94,9 @@ function StatusIcons() {
     const p = b.percent;
     return p > 85 ? "battery-full" : p > 55 ? "battery-high" : p > 25 ? "battery-medium" : p > 10 ? "battery-low" : "battery-warning";
   };
+  // Presence changes rarely; the values behind it change often.
+  const hasBluetooth = memo(() => status.net()?.bluetooth.present ?? false);
+  const hasBattery = memo(() => status.battery() !== null);
   const batteryColor = () => {
     const b = status.battery();
     if (!b || b.charging) return "$green";
@@ -97,7 +106,7 @@ function StatusIcons() {
     <Box gap={14} align="center">
       <StatusIcon icon={netIcon} tint={() => (status.net()?.online ? "$cyan" : "$textMuted")} onClick={() => openControl("rede")} />
       {() =>
-        status.net()?.bluetooth.present
+        hasBluetooth()
           ? <StatusIcon
               icon={btIcon}
               tint={() => (status.net()?.bluetooth.connected.length ? "$cyan" : "$textMuted")}
@@ -111,12 +120,13 @@ function StatusIcons() {
         badge={() => status.notifications()?.count ?? 0}
         onClick={() => toggle("notifications")}
       />
-      {() => (status.battery() ? <StatusIcon icon={batteryIcon} tint={batteryColor} onClick={() => toggle("drawer")} /> : null)}
+      {() => (hasBattery() ? <StatusIcon icon={batteryIcon} tint={batteryColor} onClick={() => toggle("drawer")} /> : null)}
     </Box>
   );
 }
 
 export default function Bar() {
+  const hasEvents = memo(() => status.agendaToday() > 0);
   return (
     <Surface layer="top" anchor="top left right" height={MARGIN + HEIGHT} exclusive={MARGIN + HEIGHT}>
       <Box padding={[MARGIN, GAP, 0, GAP]} grow>
@@ -159,7 +169,7 @@ export default function Bar() {
           <Divider />
           <Box gap={12} align="center">
             {() =>
-              status.agendaToday() > 0
+              hasEvents()
                 ? <Tag icon="calendar-dots" text={() => String(status.agendaToday())} accent="$purple" tint="$purpleTint" height={20} size={11} onClick={() => toggle("drawer")} />
                 : null}
             <Clock now={() => ctx.now("minute")} onClick={() => toggle("power")} />

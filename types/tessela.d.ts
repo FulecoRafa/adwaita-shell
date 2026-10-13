@@ -17,6 +17,8 @@ interface WritableSignal<T> extends Signal<T> {
 declare function signal<T>(initial: T): WritableSignal<T>;
 /** Like `signal`, but the value survives hot reloads of this surface. */
 declare function persist<T>(key: string, initial: T): WritableSignal<T>;
+/** A derived value: `fn` re-runs when what it reads changes; code reading the memo re-runs only when the result differs. */
+declare function memo<T>(fn: () => T): Signal<T>;
 declare function log(...parts: unknown[]): void;
 
 /** A declarative event handler: the host calls a module, no guest code runs. */
