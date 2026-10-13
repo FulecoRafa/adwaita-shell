@@ -1,51 +1,32 @@
-// Workspaces, windows and pinned apps.
-// MOCK: fixed data until the `hyprland` and `apps` modules exist.
+// Workspaces, windows and pinned apps, from the hyprland and apps modules.
 
 import { toggle, type Panel } from "./shell";
 
 export const workspaceCount = 6;
 
-const mockWorkspaces = signal<Workspace[]>([
-  { id: 1, name: "1", monitor: "eDP-1", windows: 2, active: false, focused: false },
-  { id: 2, name: "2", monitor: "eDP-1", windows: 1, active: false, focused: false },
-  { id: 3, name: "3", monitor: "eDP-1", windows: 3, active: true, focused: true },
-  { id: 4, name: "4", monitor: "eDP-1", windows: 1, active: false, focused: false },
-]);
+export const workspaces = (): Workspace[] => hyprland.workspaces();
+export const clients = (): Client[] => hyprland.clients();
 
-const mockClients = signal<Client[]>([
-  { address: "0x1", class: "helium", title: "GitHub", workspace: 1, focused: false },
-  { address: "0x2", class: "com.mitchellh.ghostty", title: "zsh", workspace: 3, focused: true },
-  { address: "0x3", class: "discord", title: "Discord", workspace: 2, focused: false },
-]);
-
-export const workspaces: Signal<Workspace[]> = mockWorkspaces;
-export const clients: Signal<Client[]> = mockClients;
-
-export function switchTo(id: number) {
-  mockWorkspaces.update((ws) => ws.map((w) => ({ ...w, active: w.id === id, focused: w.id === id })));
-}
-
-export function cycleWorkspace(delta: number) {
-  const current = workspaces().find((w) => w.focused)?.id ?? 1;
-  switchTo(Math.min(workspaceCount, Math.max(1, current + delta)));
-}
-
-export function focusWindow(address: string) {
-  mockClients.update((cs) => cs.map((c) => ({ ...c, focused: c.address === address })));
-}
+export const switchTo = (id: number) => hyprland.dispatch(`workspace ${id}`);
+/** -1: previous workspace (wheel up), 1: next. */
+export const cycleWorkspace = (delta: number) => hyprland.dispatch(`workspace r${delta < 0 ? "-" : "+"}1`);
+export const focusWindow = (address: string) => hyprland.dispatch(`focuswindow address:${address}`);
+export const launch = (command: string[] | string) => apps.launch(command);
 
 /** A pinned app: a command to launch, or a panel to toggle. */
 export interface Pinned {
   key: string;
   icon: string;
+  /** Theme icon of the app, when it has a desktop entry. */
+  image?: string;
   color: string;
   /** Matches the class of the app's windows. */
   match?: RegExp;
-  command?: string[];
+  command?: string[] | string;
   panel?: Panel;
 }
 
-export const pinned: Pinned[] = [
+const builtin: Pinned[] = [
   { key: "browser", icon: "compass", color: "$cyan", match: /helium|chrom|firefox|zen/i, command: ["helium"] },
   { key: "terminal", icon: "terminal-window", color: "$green", match: /ghostty|kitty|foot|alacritty|^fuleco\.terminal$/i, command: ["ghostty"] },
   { key: "files", icon: "folder", color: "$yellow", match: /yazi|nautilus|thunar|dolphin/i, command: ["ghostty", "--class=fuleco.yazi", "-e", "yazi"] },
@@ -58,40 +39,63 @@ export const tuiIcons: Record<string, string> = {
   wifitui: "wifi-high", btop: "gauge", yazi: "folder", calcure: "calendar-dots", wiremix: "faders", bluetui: "bluetooth",
 };
 
+const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Pinned by the user (from the launcher): "tui:name" or a desktop entry id. */
+export const userPins = shared<string[]>("pinned", [], { store: true });
+
+/** Built-in pins with the user's in the middle, like the reference bar. */
+export function pinned(): Pinned[] {
+  const user: Pinned[] = userPins().map((id): Pinned => {
+    if (id.startsWith("tui:")) {
+      const name = id.slice(4);
+      return { key: id, icon: tuiIcons[name] ?? "terminal-window", color: "$green", match: new RegExp(`^fuleco\\.${escape(name)}$`), command: ["ghostty", `--class=fuleco.${name}`, "-e", name] };
+    }
+    const base = id.replace(/\.desktop$/, "");
+    return { key: id, icon: "app-window", image: appIcon(base), color: "$cyan", match: new RegExp(`^${escape(base)}$`, "i"), command: base };
+  });
+  return [...builtin.slice(0, 3), ...user, ...builtin.slice(3)];
+}
+
 export const windowsOf = (p: Pinned) => (p.match ? clients().filter((c) => p.match!.test(c.class)) : []);
 
 /** Open windows of apps that are not pinned, one entry per class. */
 export function extraApps(): string[] {
+  const all = pinned();
   const seen = new Set<string>();
   for (const c of clients()) {
     if (!c.class || seen.has(c.class)) continue;
-    if (pinned.some((p) => p.match?.test(c.class))) continue;
+    if (all.some((p) => p.match?.test(c.class))) continue;
     seen.add(c.class);
   }
   return [...seen];
 }
 
-/** Cycle through the app's windows, or launch it. */
-export function activate(p: Pinned) {
-  if (p.panel) return toggle(p.panel);
-  const windows = windowsOf(p);
-  if (windows.length === 0) return launch(p.command ?? []);
-  const current = windows.findIndex((w) => w.focused);
-  focusWindow(windows[(current + 1) % windows.length].address);
-}
-
-export function activateClass(cls: string) {
-  const windows = clients().filter((c) => c.class === cls);
+function cycle(windows: Client[]) {
   if (windows.length === 0) return;
   const current = windows.findIndex((w) => w.focused);
   focusWindow(windows[(current + 1) % windows.length].address);
 }
 
-export function launch(command: string[] | string) {
-  log("launch", JSON.stringify(command));
+/** Toggle its panel, cycle through its windows, or launch it. */
+export function activate(p: Pinned) {
+  if (p.panel) return toggle(p.panel);
+  const windows = windowsOf(p);
+  if (windows.length === 0) return p.command && launch(p.command);
+  cycle(windows);
 }
+
+export const activateClass = (cls: string) => cycle(clients().filter((c) => c.class === cls));
+
+// Lookups go to the host once per class; bindings re-run often.
+const icons = new Map<string, string>();
 
 /** Theme icon for a window class; "" when there is none. */
 export function appIcon(cls: string): string {
-  return cls === "discord" ? "icon:discord" : "";
+  let icon = icons.get(cls);
+  if (icon === undefined) {
+    icon = apps.lookup(cls)?.icon || apps.icon(cls.toLowerCase());
+    icons.set(cls, icon);
+  }
+  return icon;
 }

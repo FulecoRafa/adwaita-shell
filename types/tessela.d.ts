@@ -84,11 +84,15 @@ declare const hyprland: {
   keyboardLayout(): string;
   dispatch(command: string): void;
   dispatchAction(command: string): Action;
+  /** Switch every keyboard to its layout number `index`. */
+  switchLayout(index: number): void;
 };
 
 interface Battery {
   percent: number;
   charging: boolean;
+  /** "Charging" | "Discharging" | "Full" | "Not charging"... */
+  status: string;
   /** Seconds to empty (or full, when charging); 0 = unknown. */
   timeLeft: number;
   watts: number;
@@ -96,11 +100,12 @@ interface Battery {
 /** /proc and /sys readings (capability "system"). */
 declare const system: {
   /** CPU usage in percent, every 2 s. */
-  cpu(): number;
-  cpuHistory(): number[];
-  memory(): { percent: number; usedGiB: number; totalGiB: number };
-  disk(): { percent: number; usedGiB: number; totalGiB: number };
-  temperature(): number;
+  // Each is null until the first reading.
+  cpu(): number | null;
+  cpuHistory(): number[] | null;
+  memory(): { percent: number; usedGiB: number; totalGiB: number } | null;
+  disk(): { percent: number; usedGiB: number; totalGiB: number } | null;
+  temperature(): number | null;
   battery(): Battery | null;
 };
 
@@ -114,6 +119,10 @@ interface AppInfo {
 declare const apps: {
   /** Best desktop entry for a window class. */
   lookup(appId: string): AppInfo | null;
+  /** Image source for a theme icon name, "" if the theme has none. */
+  icon(name: string): string;
+  /** Every visible desktop entry. */
+  list(): AppInfo[];
   launch(idOrCommand: string | string[]): void;
   launchAction(idOrCommand: string | string[]): Action;
 };

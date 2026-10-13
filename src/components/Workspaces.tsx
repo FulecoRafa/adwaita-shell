@@ -1,6 +1,6 @@
 export interface WorkspacesProps {
   count: number;
-  workspaces: Signal<Workspace[]>;
+  workspaces: () => Workspace[];
   onSelect: (id: number) => void;
   onScroll?: (delta: number) => void;
 }

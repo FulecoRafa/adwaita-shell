@@ -9,11 +9,12 @@ font = "CaskaydiaCove Nerd Font"
 [surfaces.bar]
 entry = "src/surfaces/bar.tsx"
 capabilities = ["context", "state", "timer", "hyprland", "hyprland:dispatch", "system", "apps", "apps:launch", "tray",
-                "service:audio", "service:network", "service:notifications", "service:ai"]
+                "service:audio", "service:network", "service:notifications", "service:ai", "service:agenda"]
 
 [surfaces.drawer]
 entry = "src/surfaces/drawer.tsx"
-capabilities = ["context", "state", "timer", "system", "apps:launch", "service:media", "service:weather", "service:network", "service:ai"]
+capabilities = ["context", "state", "timer", "system", "apps:launch",
+                "service:media", "service:weather", "service:network", "service:ai", "service:power", "service:agenda"]
 
 # Services this project ships. The runner starts them and restarts them if
 # they die; each one serves <runtime dir>/<name>.sock.

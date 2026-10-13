@@ -31,6 +31,7 @@ function Apps() {
     <AppTile
       key={app.key}
       icon={app.icon}
+      image={app.image}
       accent={app.color}
       running={() => desktop.windowsOf(app).length > 0}
       active={() => (app.panel ? panel() === app.panel : desktop.windowsOf(app).some((w) => w.focused))}
@@ -54,9 +55,11 @@ function Apps() {
   };
   return (
     <Box gap={6} align="center">
-      {desktop.pinned.slice(0, 3).map(pinnedTile)}
-      {() => desktop.extraApps().map(extraTile)}
-      {desktop.pinned.slice(3).map(pinnedTile)}
+      {() => {
+        const all = desktop.pinned();
+        const fixed = all.length - 2; // launcher and drawer go last
+        return [...all.slice(0, fixed).map(pinnedTile), ...desktop.extraApps().map(extraTile), ...all.slice(fixed).map(pinnedTile)];
+      }}
     </Box>
   );
 }
@@ -137,7 +140,14 @@ export default function Bar() {
           <Divider />
           <Apps />
           <Box grow />
-          <AiChip usage={status.ai} active={() => panel() === "ai"} onClick={() => toggle("ai")} />
+          <AiChip
+            usage={status.ai}
+            active={() => panel() === "ai"}
+            onClick={() => {
+              status.refreshAi();
+              toggle("ai");
+            }}
+          />
           <Gauge value={status.cpu} onClick={() => desktop.launch(["ghostty", "-e", "btop"])} />
           <Tray />
           <Tag
