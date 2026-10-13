@@ -16,7 +16,8 @@ export interface TimerData {
 
 export function TimersCard(p: Base & { timers: () => TimerData[]; now: () => Date; onAdd: (minutes: number) => void; onCancel: (id: number) => void }) {
   const left = (t: TimerData) => {
-    const s = Math.max(0, Math.round((t.endsAt - p.now().getTime()) / 1000));
+    const s = Math.round((t.endsAt - p.now().getTime()) / 1000);
+    if (s <= 0) return "pronto";
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   };
   return (
