@@ -2,24 +2,17 @@
 // shell keeps in its state file (timers, tasks, draft, layout).
 
 import type { CardSize } from "@kit/components/Card";
+import type { PlayerChoice, Track } from "@kit/components/MediaPlayer";
 import { eventsOn as agenda } from "./status";
 
-export interface Player {
-  identity: string;
-  title: string;
-  artist: string;
-  album: string;
-  /** Image source of the cover, "" if none. */
-  art: string;
-  playing: boolean;
-  /** Seconds. */
-  position: number;
-  length: number;
-}
+export type Player = Track;
 export const player = () => use("media").subscribe<Player>("player")();
 export const playPause = () => use("media").call("play_pause");
 export const next = () => use("media").call("next");
 export const previous = () => use("media").call("previous");
+export const seek = (position: number) => use("media").call("seek", { position });
+export const players = () => use("media").subscribe<PlayerChoice[]>("players")() ?? [];
+export const choosePlayer = (instance: string) => use("media").call("choose", { instance });
 
 export interface Hour {
   hour: string;

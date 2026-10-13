@@ -36,6 +36,7 @@ end.
 | `Popup`: anchored below its parent, closes on outside click | tray menu |
 | Overlays let clicks on the bar through (input region minus reserved space) | a bar button switches or closes the open panel, like the reference |
 | `Slider`: click, drag and wheel set a 0..1 level | volume, microphone, brightness, per-app volume |
+| `Slider` `rate`/`at`, `wave`, `onCommit`; `Image` `radius`/`fit` (tessela ADR 0021) | media progress that advances and waves with no guest code, seeking; rounded, cropped covers |
 | `Box.maxHeight` (with `scroll`) | wifi and bluetooth lists that grow, then scroll |
 | `Label.wrap` / `lines` | notification bodies, error messages |
 | `Input.secret` | wifi password |
@@ -67,7 +68,7 @@ services directory and restarts it when it dies. This project ships:
 | `notifications` | history (`busctl monitor` on the bus), dismiss and clear through the running server, do-not-disturb |
 | `ai` | Claude and Codex quota windows and a 7-day history of daily peaks (`ai-usage show`) |
 | `brightness` | backlight level (sysfs, `brightnessctl`) |
-| `media` | MPRIS player (`playerctl`) |
+| `media` | MPRIS players (`playerctl`): the last one that started playing, or one picked by hand; covers saved to `~/.cache/tessela/adwaita-shell/art`; seek |
 | `weather` | current conditions and next hours (wttr.in, cached) |
 | `power` | power profile (`powerprofilesctl`), caffeine (`systemd-inhibit --what=idle`) |
 | `agenda` | calcure events |
@@ -95,6 +96,10 @@ services directory and restarts it when it dies. This project ships:
 - Plugins run `python3` from `PATH` (the dev shell has it; the desktop
   session on NixOS does not).
 - Animations (width/color transitions, the pulsing AI chip, sliding panels).
+  The first one, the media card's moving wave, runs in the renderer
+  (tessela ADR 0021); the rest should follow the same path.
+- The media wave has a fixed amplitude; the reference follows the audio
+  level (cava).
 - Drag to reorder drawer cards (edit mode uses ↑/↓ buttons).
 - Time zones in the sandbox (the world clock uses fixed offsets).
 - Surfaces of the reference shell not rebuilt yet: notification popups,

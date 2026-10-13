@@ -107,7 +107,7 @@ function card(item: data.Placed) {
   };
   switch (item.key) {
     case "media":
-      return <MediaCard {...common} player={data.player} onPlayPause={data.playPause} onNext={data.next} onPrevious={data.previous} />;
+      return <MediaCard {...common} player={data.player} onPlayPause={data.playPause} onNext={data.next} onPrevious={data.previous} onSeek={data.seek} players={data.players} onChoose={data.choosePlayer} />;
     case "weather":
       return <WeatherCard {...common} weather={data.weather} onOpen={terminal("weathr")} />;
     case "energy":
