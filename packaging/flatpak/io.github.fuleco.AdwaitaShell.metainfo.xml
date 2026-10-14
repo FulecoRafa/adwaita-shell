@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.fuleco.AdwaitaShell</id>
+  <name>Adwaita Shell</name>
+  <summary>Desktop shell for Hyprland built with tessela</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT OR Apache-2.0</project_license>
+  <developer id="io.github.fuleco">
+    <name>Fuleco</name>
+  </developer>
+  <description>
+    <p>
+      A bar, a control center, a notification center, an AI usage panel, a
+      power strip, a drawer of cards and a launcher, written as sandboxed TSX
+      surfaces for the tessela runner, with Python services for audio,
+      network, bluetooth, media, notifications, power, brightness, weather
+      and the agenda.
+    </p>
+  </description>
+  <icon type="stock">io.github.fuleco.AdwaitaShell</icon>
+  <launchable type="desktop-id">io.github.fuleco.AdwaitaShell.desktop</launchable>
+  <url type="homepage">https://example.invalid/adwaita-shell</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2026-10-13"/>
+  </releases>
+</component>

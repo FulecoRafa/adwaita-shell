@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- A screen with a bar along the top and a panel hanging from it. -->
+  <rect x="8" y="16" width="112" height="96" rx="14" fill="#3b3355"/>
+  <rect x="16" y="24" width="96" height="14" rx="7" fill="#e6e1f0"/>
+  <circle cx="25" cy="31" r="4" fill="#8e7cc3"/>
+  <rect x="64" y="44" width="40" height="52" rx="8" fill="#8e7cc3"/>
+  <rect x="70" y="52" width="28" height="6" rx="3" fill="#e6e1f0"/>
+  <rect x="70" y="64" width="20" height="6" rx="3" fill="#e6e1f0"/>
+</svg>

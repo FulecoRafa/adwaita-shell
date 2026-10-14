@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Adwaita Shell
+Comment=Desktop shell for Hyprland: bar, panels, launcher and drawer
+Exec=adwaita-shell
+Terminal=false
+NoDisplay=true
+Categories=System;
+Icon=io.github.fuleco.AdwaitaShell

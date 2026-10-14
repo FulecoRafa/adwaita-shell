@@ -1,0 +1,84 @@
+# adwaita-shell as a Flatpak: the project, the tessela runner and the icon
+# font, in one app. Read README.md first: a desktop shell needs most of the
+# host, so this sandbox is mostly nominal.
+#
+# Builds tessela from a sibling checkout (../tessela next to this repository)
+# through tessela's own module file.
+id: io.github.fuleco.AdwaitaShell
+runtime: org.freedesktop.Platform
+runtime-version: '26.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: adwaita-shell
+finish-args:
+  # The compositor's own Wayland socket, not --socket=wayland: Flatpak hands
+  # that one out through security-context-v1, and both Hyprland and sway then
+  # hide zwlr_layer_shell_v1 (and Hyprland's protocols) from the app, so no
+  # surface could open. The wrapper points WAYLAND_DISPLAY at whichever of
+  # these exists; another name needs --filesystem=xdg-run/<name> (README.md).
+  - --filesystem=xdg-run/wayland-0
+  - --filesystem=xdg-run/wayland-1
+  - --device=dri
+  - --share=ipc
+  # Weather (wttr.in); `ip` shows the host's addresses only on the host's network.
+  - --share=network
+  # Every tool the plugins call (wpctl, nmcli, bluetoothctl, playerctl,
+  # busctl, brightnessctl, ...) and every app the shell launches runs on the
+  # host through flatpak-spawn --host. This is a full sandbox escape.
+  - --talk-name=org.freedesktop.Flatpak
+  # The tray (StatusNotifierItems of every app) and MPRIS players.
+  - --socket=session-bus
+  # Hyprland's IPC sockets (workspaces, windows, dispatch).
+  - --filesystem=xdg-run/hypr
+  # Desktop entries and icons of the host and the user, for the launcher,
+  # the pinned apps and window icons.
+  - --filesystem=host-os:ro
+  - --filesystem=xdg-data/applications:ro
+  - --filesystem=xdg-data/icons:ro
+  - --filesystem=xdg-data/flatpak/exports/share:ro
+  - --filesystem=/var/lib/flatpak/exports/share:ro
+  # The icon theme the user picked (GTK settings.ini).
+  - --filesystem=xdg-config/gtk-3.0:ro
+  - --filesystem=xdg-config/gtk-4.0:ro
+  # The agenda plugin reads calcure's events.
+  - --filesystem=xdg-config/calcure:ro
+modules:
+  - ../../../tessela/packaging/flatpak/tessela.yml
+
+  - name: phosphor-icons-fill
+    buildsystem: simple
+    build-commands:
+      - install -Dm644 Phosphor-Fill.ttf -t /app/share/fonts/phosphor
+    sources:
+      - type: file
+        url: https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/Phosphor-Fill.ttf
+        sha256: a53f5d2630cab5e3b7536ecb9d69d71519a2190298c22b1f8d770dd37bc2940a
+
+  - name: adwaita-shell
+    buildsystem: simple
+    build-commands:
+      - install -d /app/share/adwaita-shell/plugins
+      - cp -a tessela.toml tsconfig.json src kit assets types /app/share/adwaita-shell/
+      - install -m644 plugins/*.py /app/share/adwaita-shell/plugins/
+      # /app is read-only at runtime: compile the plugins now.
+      - python3 -m compileall -q /app/share/adwaita-shell/plugins
+      - install -Dm755 packaging/flatpak/adwaita-shell.sh /app/bin/adwaita-shell
+      - install -Dm755 packaging/flatpak/host-command -t /app/lib/adwaita-shell
+      - |
+        mkdir -p /app/lib/adwaita-shell/host-bin
+        for cmd in wpctl pw-dump nmcli bluetoothctl ip playerctl busctl systemd-inhibit \
+                   powerprofilesctl brightnessctl systemctl loginctl hyprctl uwsm; do
+          ln -s ../host-command /app/lib/adwaita-shell/host-bin/$cmd
+        done
+      - install -Dm644 packaging/flatpak/io.github.fuleco.AdwaitaShell.desktop -t /app/share/applications
+      - install -Dm644 packaging/flatpak/io.github.fuleco.AdwaitaShell.svg -t /app/share/icons/hicolor/scalable/apps
+      - install -Dm644 packaging/flatpak/io.github.fuleco.AdwaitaShell.metainfo.xml -t /app/share/metainfo
+      - install -Dm644 LICENSE-MIT LICENSE-APACHE -t /app/share/licenses/adwaita-shell
+    sources:
+      - type: dir
+        path: ../..
+        skip:
+          - .git
+          - result
+          - .flatpak-builder

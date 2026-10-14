@@ -1,0 +1,8 @@
+#!/bin/sh
+# Runs the host command this link is named after, outside the sandbox:
+# the plugins' tools (wpctl, nmcli, ...) and the apps the shell launches live
+# on the host. --watch-bus: if this process dies, even by SIGKILL, the host
+# one is killed too, so long-running followers (nmcli monitor, playerctl
+# --follow) never outlive the plugin. The sandbox's working directory
+# (/app/share/adwaita-shell) does not exist on the host.
+exec flatpak-spawn --host --watch-bus --directory="$HOME" "${0##*/}" "$@"
