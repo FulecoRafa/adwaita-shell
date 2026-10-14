@@ -39,3 +39,11 @@ tessela run ../adwaita-shell --devtools   # then: tessela devtools --help
 ```
 
 Type-check: `nix shell nixpkgs#typescript --command tsc -p .`
+
+## License
+
+Licensed under either of the [Apache License 2.0](LICENSE-APACHE) or the
+[MIT license](LICENSE-MIT), at your option.
+
+`assets/nix-snowflake.svg` is the NixOS snowflake from
+[nixos-artwork](https://github.com/NixOS/nixos-artwork), CC-BY 4.0, recolored.
