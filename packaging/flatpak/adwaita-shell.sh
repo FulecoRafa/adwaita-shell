@@ -5,13 +5,14 @@
 # PATH, in order:
 #   /app/bin                 tessela
 #   /app/lib/adwaita-shell/host-bin
-#                            the tools the plugins and the power strip call;
+#                            the tools the services and the power strip call;
 #                            always the host's, even when the runtime has
 #                            its own (they must match the host's daemons)
-#   /usr/bin                 the runtime: sh, python3 (the plugins run here)
+#   /usr/bin                 the runtime (sh, ...)
 #   $shims                   every other command on the host's PATH, made at
 #                            each start, so apps launched from the shell
-#                            (desktop entries, pinned apps) start on the host
+#                            (desktop entries, pinned apps) and the services'
+#                            optional ai-usage start on the host
 set -eu
 
 forward=/app/lib/adwaita-shell/host-command

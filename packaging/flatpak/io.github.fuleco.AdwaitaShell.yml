@@ -21,14 +21,23 @@ finish-args:
   - --filesystem=xdg-run/wayland-1
   - --device=dri
   - --share=ipc
-  # Weather (wttr.in); `ip` shows the host's addresses only on the host's network.
+  # Weather (wttr.in) and media covers over https.
   - --share=network
-  # Every tool the plugins call (wpctl, nmcli, bluetoothctl, playerctl,
-  # busctl, brightnessctl, ...) and every app the shell launches runs on the
+  # Every tool the services call (pw-dump, wpctl, nmcli, bluetoothctl,
+  # brightnessctl, ai-usage) and every app the shell launches runs on the
   # host through flatpak-spawn --host. This is a full sandbox escape.
   - --talk-name=org.freedesktop.Flatpak
-  # The tray (StatusNotifierItems of every app) and MPRIS players.
+  # The tray (StatusNotifierItems of every app), MPRIS players and the
+  # notifications service (a monitor connection, which the filtering proxy
+  # would not allow).
   - --socket=session-bus
+  # What the services read on the system bus: networks, Bluetooth, the power
+  # profile, and logind for the caffeine idle inhibitor.
+  - --system-talk-name=org.freedesktop.NetworkManager
+  - --system-talk-name=org.bluez
+  - --system-talk-name=org.freedesktop.login1
+  - --system-talk-name=org.freedesktop.UPower.PowerProfiles
+  - --system-talk-name=net.hadess.PowerProfiles
   # Hyprland's IPC sockets (workspaces, windows, dispatch).
   - --filesystem=xdg-run/hypr
   # Desktop entries and icons of the host and the user, for the launcher,
@@ -41,7 +50,7 @@ finish-args:
   # The icon theme the user picked (GTK settings.ini).
   - --filesystem=xdg-config/gtk-3.0:ro
   - --filesystem=xdg-config/gtk-4.0:ro
-  # The agenda plugin reads calcure's events.
+  # The agenda service reads calcure's events.
   - --filesystem=xdg-config/calcure:ro
 modules:
   - ../../../tessela/packaging/flatpak/tessela.yml
@@ -55,20 +64,54 @@ modules:
         url: https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/Phosphor-Fill.ttf
         sha256: a53f5d2630cab5e3b7536ecb9d69d71519a2190298c22b1f8d770dd37bc2940a
 
+  # The services (services/, Rust). Its Cargo.toml takes tessela's SDK from
+  # ../../tessela/sdk/rust, so both checkouts go in side by side; crates come
+  # from services-cargo-sources.json (regenerate it when services/Cargo.lock
+  # changes, see README.md).
+  - name: adwaita-services
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/adwaita-services/cargo
+        CARGO_NET_OFFLINE: 'true'
+    build-commands:
+      - cargo build --offline --locked --release -j "${FLATPAK_BUILDER_N_JOBS}" --manifest-path adwaita-shell/services/Cargo.toml
+      - install -Dm755 adwaita-shell/services/target/release/adwaita-services -t /app/libexec/adwaita-shell
+    sources:
+      - type: dir
+        path: ../..
+        dest: adwaita-shell
+        skip:
+          - .git
+          - result
+          - .flatpak-builder
+          - services/target
+      - type: dir
+        path: ../../../tessela
+        dest: tessela
+        skip:
+          - .git
+          - target
+          - run
+          - result
+          - .flatpak-builder
+      - services-cargo-sources.json
+
   - name: adwaita-shell
     buildsystem: simple
     build-commands:
-      - install -d /app/share/adwaita-shell/plugins
+      - install -d /app/share/adwaita-shell
       - cp -a tessela.toml tsconfig.json src kit assets types /app/share/adwaita-shell/
-      - install -m644 plugins/*.py /app/share/adwaita-shell/plugins/
-      # /app is read-only at runtime: compile the plugins now.
-      - python3 -m compileall -q /app/share/adwaita-shell/plugins
+      # The services run from /app/libexec, not from services/target.
+      - sed -i 's|^command = \["services/target/release/adwaita-services"\]$|command = ["/app/libexec/adwaita-shell/adwaita-services"]|' /app/share/adwaita-shell/tessela.toml
+      - grep -q '^command = \["/app/libexec/adwaita-shell/adwaita-services"\]$' /app/share/adwaita-shell/tessela.toml
       - install -Dm755 packaging/flatpak/adwaita-shell.sh /app/bin/adwaita-shell
       - install -Dm755 packaging/flatpak/host-command -t /app/lib/adwaita-shell
       - |
         mkdir -p /app/lib/adwaita-shell/host-bin
-        for cmd in wpctl pw-dump nmcli bluetoothctl ip playerctl busctl systemd-inhibit \
-                   powerprofilesctl brightnessctl systemctl loginctl hyprctl uwsm; do
+        for cmd in pw-dump wpctl nmcli bluetoothctl brightnessctl \
+                   systemctl loginctl hyprctl uwsm; do
           ln -s ../host-command /app/lib/adwaita-shell/host-bin/$cmd
         done
       - install -Dm644 packaging/flatpak/io.github.fuleco.AdwaitaShell.desktop -t /app/share/applications
@@ -82,3 +125,4 @@ modules:
           - .git
           - result
           - .flatpak-builder
+          - services

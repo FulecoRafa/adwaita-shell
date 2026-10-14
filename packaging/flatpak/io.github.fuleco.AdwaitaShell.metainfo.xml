@@ -12,7 +12,7 @@
     <p>
       A bar, a control center, a notification center, an AI usage panel, a
       power strip, a drawer of cards and a launcher, written as sandboxed TSX
-      surfaces for the tessela runner, with Python services for audio,
+      surfaces for the tessela runner, with Rust services for audio,
       network, bluetooth, media, notifications, power, brightness, weather
       and the agenda.
     </p>
