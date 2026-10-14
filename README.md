@@ -42,6 +42,13 @@ tessela run ../adwaita-shell --devtools   # then: tessela devtools --help
 
 Type-check: `nix shell nixpkgs#typescript --command tsc -p .`
 
+Installed, `adwaita-shell` runs the project with the services prebuilt
+(`tessela.toml` points at the installed binary): `nix build` / the Home
+Manager and NixOS modules (`nix/README.md`), an RPM
+(`packaging/rpm/README.md`) or a Flatpak (`packaging/flatpak/README.md`).
+All three build `services/` against `../tessela/sdk/rust`, so they need
+tessela's source next to this one (Nix takes it from the `tessela` input).
+
 ## Services
 
 `services/` builds one binary, `adwaita-services`, on tessela's Rust SDK
