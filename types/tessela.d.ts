@@ -234,6 +234,13 @@ interface BoxProps extends Keyed, Events {
   place?: Bind<{ top?: number; right?: number; bottom?: number; left?: number }>;
   /** Scroll vertically when the content is taller than the box. */
   scroll?: Bind<boolean>;
+  /**
+   * Files (absolute paths) dragged out to other apps: pressing and moving
+   * past a few pixels starts a drag offering them as text/uri-list.
+   */
+  drag?: Bind<string | string[]>;
+  onDragStart?: On;
+  onDragEnd?: On<{ dropped: boolean }>;
   children?: Child;
 }
 declare function Box(props: BoxProps): ViewNode;
