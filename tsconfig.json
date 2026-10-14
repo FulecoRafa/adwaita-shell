@@ -13,8 +13,7 @@
     "types": [],
     "skipLibCheck": true,
     // Packages declared in tessela.toml [imports].
-    "baseUrl": ".",
-    "paths": { "@kit/*": ["kit/*"] }
+    "paths": { "@kit/*": ["./kit/*"] }
   },
   "include": ["types/*.d.ts", "kit/**/*.ts", "kit/**/*.tsx", "src/**/*.ts", "src/**/*.tsx"]
 }
