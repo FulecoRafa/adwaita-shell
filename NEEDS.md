@@ -59,19 +59,21 @@ end.
 ## Services (plugins, out of process)
 
 The runner starts each `[plugins.<name>]` command, points it at the
-services directory and restarts it when it dies. This project ships:
+services directory and restarts it when it dies. This project ships one,
+`services/` (Rust, on tessela's SDK; tessela ADR 0022): one process serving
+every socket below, on events where the system has them (see README).
 
-| Plugin | Source |
+| Service | Source |
 |---|---|
-| `audio` | volume and mute of the default sink and source, outputs, inputs and app streams (`wpctl`, `pw-dump`); set default, per-app volume |
-| `network` | wifi, wired and bluetooth state, wifi networks, bluetooth devices (`nmcli`, `bluetoothctl`); radios on/off, connect/disconnect/forget, pair, discovery |
-| `notifications` | history (`busctl monitor` on the bus), dismiss and clear through the running server, do-not-disturb |
+| `audio` | volume and mute of the default sink and source, outputs, inputs and app streams (`pw-dump --monitor`, set with `wpctl`); set default, per-app volume |
+| `network` | wifi, wired and bluetooth state, wifi networks, bluetooth devices (NetworkManager and BlueZ over D-Bus; actions with `nmcli`, `bluetoothctl`); radios on/off, connect/disconnect/forget, pair, discovery |
+| `notifications` | history (a D-Bus monitor connection), dismiss and clear through the running server, do-not-disturb |
 | `ai` | Claude and Codex quota windows and a 7-day history of daily peaks (`ai-usage show`) |
 | `brightness` | backlight level (sysfs, `brightnessctl`) |
-| `media` | MPRIS players (`playerctl`): the last one that started playing, or one picked by hand; covers saved to `~/.cache/tessela/adwaita-shell/art`; seek |
+| `media` | MPRIS players (D-Bus): the last one that started playing, or one picked by hand; covers saved to `~/.cache/tessela/adwaita-shell/art`; seek |
 | `weather` | current conditions and next hours (wttr.in, cached) |
-| `power` | power profile (`powerprofilesctl`), caffeine (`systemd-inhibit --what=idle`) |
-| `agenda` | calcure events |
+| `power` | power profile (power-profiles-daemon over D-Bus), caffeine (a logind idle inhibitor) |
+| `agenda` | calcure events (inotify) |
 
 ## Still open
 
@@ -82,8 +84,8 @@ services directory and restarts it when it dies. This project ships:
 - Notifications: the desktop's shell owns `org.freedesktop.Notifications`, so
   the plugin observes the bus: the history starts when it starts, actions
   cannot be invoked (only the server can emit `ActionInvoked`), popups and
-  do-not-disturb stay the desktop shell's. Taking over the server needs a
-  D-Bus binding the Python stdlib lacks.
+  do-not-disturb stay the desktop shell's. Taking over the server is now
+  possible (the services speak D-Bus through zbus); not done yet.
 - A surface whose render runs past the guest's CPU budget (50 ms) while it
   hot-reloads with the panel open crashed the whole process (SIGSEGV in a
   QuickJS finalizer, `JS_Call` from a worker). Not reproduced in a unit test
@@ -93,8 +95,6 @@ services directory and restarts it when it dies. This project ships:
   shown always, or as a tooltip.
 - Bar app tiles: right click opens the App Exposé in the reference; there is
   no Expo surface yet.
-- Plugins run `python3` from `PATH` (the dev shell has it; the desktop
-  session on NixOS does not).
 - Animations (width/color transitions, the pulsing AI chip, sliding panels).
   The first one, the media card's moving wave, runs in the renderer
   (tessela ADR 0021); the rest should follow the same path.
