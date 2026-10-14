@@ -1,0 +1,12 @@
+[Unit]
+Description=adwaita-shell (tessela desktop shell)
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=@bindir@/adwaita-shell
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
