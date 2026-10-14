@@ -244,6 +244,12 @@ interface InputProps extends Keyed {
   placeholder?: Bind<string>;
   onChange?: On<{ value: string }>;
   onSubmit?: On<{ value: string }>;
+  /**
+   * Keys the field does not edit with: "up", "down", "tab", "shift+tab",
+   * "escape", "pageup", "ctrl+enter", "ctrl+c"... With it set, Escape no
+   * longer just unfocuses. Ctrl+V pastes, Ctrl+W and Ctrl+Backspace delete a word.
+   */
+  onKey?: On<{ key: string; value: string }>;
   size?: Bind<number>;
   color?: Bind<Color>;
   /** Take keyboard focus when the surface opens. */
@@ -351,6 +357,8 @@ interface SurfaceProps extends Keyed {
   /** Space reserved so windows do not cover it. */
   exclusive?: number;
   visible?: Bind<boolean>;
+  /** "exclusive": take the keyboard while shown (a launcher). */
+  keyboard?: "on-demand" | "exclusive";
   /**
    * Clicking outside the surface calls this (panels). Clicks on the space
    * other surfaces reserve (the bar) reach them instead.
