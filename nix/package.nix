@@ -1,23 +1,20 @@
-# adwaita-shell: a tessela project (no build step). Installs the project to
-# share/adwaita-shell and a bin/adwaita-shell that runs it with tessela, with
-# the tools its plugins call on PATH.
+# adwaita-shell: a tessela project plus its services. Builds adwaita-services
+# (services/, Rust, on tessela's SDK), installs the project to
+# share/adwaita-shell with tessela.toml pointing at that binary, and a
+# bin/adwaita-shell that runs it with tessela, with the tools the services
+# call on PATH.
 {
   lib,
-  stdenvNoCC,
+  rustPlatform,
   makeWrapper,
   tessela,
-  python3,
-  # What plugins/*.py run. Only the CLIs: NetworkManager, BlueZ, PipeWire,
-  # power-profiles-daemon and the D-Bus session are services the system
-  # has to provide.
+  # What the services run. Only the CLIs: PipeWire, NetworkManager, BlueZ,
+  # logind, power-profiles-daemon and the D-Bus session are services the
+  # system has to provide (the services talk to most of them over D-Bus).
   wireplumber, # wpctl (audio)
   pipewire, # pw-dump (audio)
-  networkmanager, # nmcli (network)
-  bluez, # bluetoothctl (network)
-  iproute2, # ip (network)
-  playerctl, # playerctl (media)
-  systemd, # busctl (notifications, media), systemd-inhibit (power)
-  power-profiles-daemon, # powerprofilesctl (power)
+  networkmanager, # nmcli (network actions)
+  bluez, # bluetoothctl (network actions)
   brightnessctl, # brightnessctl (brightness)
 }:
 
@@ -27,14 +24,10 @@ let
     pipewire
     networkmanager
     bluez
-    iproute2
-    playerctl
-    systemd
-    power-profiles-daemon
     brightnessctl
   ];
 in
-stdenvNoCC.mkDerivation {
+rustPlatform.buildRustPackage {
   pname = "adwaita-shell";
   version = "0.1.0";
 
@@ -50,43 +43,49 @@ stdenvNoCC.mkDerivation {
       ../kit
       ../assets
       ../types
-      (lib.fileset.fileFilter (f: f.hasExt "py") ../plugins)
+      ../services/Cargo.toml
+      ../services/Cargo.lock
+      ../services/src
     ];
   };
 
-  nativeBuildInputs = [
-    makeWrapper
-    python3
-  ];
+  # services/Cargo.toml takes the SDK from a sibling checkout,
+  # ../../tessela/sdk/rust: put the source tessela was built from there.
+  postUnpack = ''
+    cp -r ${tessela.src} tessela
+    chmod -R u+w tessela
+  '';
 
-  dontConfigure = true;
-  dontBuild = true;
+  cargoRoot = "services";
+  buildAndTestSubdir = "services";
+  cargoLock.lockFile = ../services/Cargo.lock;
 
-  installPhase = ''
-    runHook preInstall
+  postInstall = ''
+    install -Dm755 -t $out/libexec/adwaita-shell $out/bin/adwaita-services
+    rm -r $out/bin
 
     share=$out/share/adwaita-shell
     mkdir -p $share
-    cp -r tessela.toml tsconfig.json src kit assets types plugins $share
+    cp -r tessela.toml tsconfig.json src kit assets types $share
+    # The services run from the store, not from services/target.
+    substituteInPlace $share/tessela.toml --replace-fail \
+      'command = ["services/target/release/adwaita-services"]' \
+      "command = [\"$out/libexec/adwaita-shell/adwaita-services\"]"
     install -Dm644 -t $out/share/doc/adwaita-shell README.md
     install -Dm644 -t $out/share/licenses/adwaita-shell LICENSE-MIT LICENSE-APACHE
-    # The store is read-only: compile the plugins now, so Python does not try
-    # to write __pycache__ next to them. Unchecked: store files have no mtime.
-    python3 -m compileall -q --invalidation-mode unchecked-hash $share/plugins
 
-    # The project's own python3 first; the host's tools before ours, so the
-    # CLIs match the daemons the system runs.
+    # The host's tools before ours, so the CLIs match the daemons the
+    # system runs.
     makeWrapper ${lib.getExe tessela} $out/bin/adwaita-shell \
       --add-flags "run $share" \
-      --prefix PATH : ${lib.makeBinPath [ python3 ]} \
       --suffix PATH : ${lib.makeBinPath tools}
 
     install -Dm644 ${./adwaita-shell.service} $out/lib/systemd/user/adwaita-shell.service
     substituteInPlace $out/lib/systemd/user/adwaita-shell.service \
       --replace-fail @bindir@ $out/bin
-
-    runHook postInstall
   '';
+
+  nativeBuildInputs = [ makeWrapper ];
 
   meta = {
     description = "Desktop shell for Hyprland (bar, panels, launcher, drawer), a tessela project";

@@ -46,8 +46,8 @@
       homeManagerModules.default = import ./nix/hm-module.nix self;
       nixosModules.default = import ./nix/nixos-module.nix self;
 
-      # The package (whose build byte-compiles the plugins, so a syntax error
-      # fails it) and a type-check of the TSX against types/tessela.d.ts.
+      # The package (whose build compiles and tests the services) and a
+      # type-check of the TSX against types/tessela.d.ts.
       checks = forAll (
         system: pkgs: {
           package = self.packages.${system}.adwaita-shell;
