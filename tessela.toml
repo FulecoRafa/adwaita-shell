@@ -43,31 +43,10 @@ capabilities = ["context", "state", "service:ai"]
 entry = "src/surfaces/power.tsx"
 capabilities = ["context", "state", "timer", "apps:launch"]
 
-# Services this project ships. The runner starts them and restarts them if
-# they die; each one serves <runtime dir>/<name>.sock.
-[plugins.audio]
-command = ["python3", "plugins/audio.py"]
-
-[plugins.network]
-command = ["python3", "plugins/network.py"]
-
-[plugins.notifications]
-command = ["python3", "plugins/notifications.py"]
-
-[plugins.ai]
-command = ["python3", "plugins/ai.py"]
-
-[plugins.media]
-command = ["python3", "plugins/media.py"]
-
-[plugins.weather]
-command = ["python3", "plugins/weather.py"]
-
-[plugins.power]
-command = ["python3", "plugins/power.py"]
-
-[plugins.brightness]
-command = ["python3", "plugins/brightness.py"]
-
-[plugins.agenda]
-command = ["python3", "plugins/agenda.py"]
+# Services this project ships: one process (services/, Rust) serving one
+# socket per service, <runtime dir>/services/<name>.sock. Build it first:
+#   cargo build --release --manifest-path services/Cargo.toml
+# The runner starts it, waits for these sockets and restarts it if it dies.
+[plugins.services]
+command = ["services/target/release/adwaita-services"]
+services = ["agenda", "ai", "audio", "brightness", "media", "network", "notifications", "power", "weather"]

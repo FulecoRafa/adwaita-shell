@@ -12,7 +12,8 @@ src/surfaces/       entries, one per window: bar, control center, notifications,
 src/cards/          drawer cards, each drawn small (1×1), wide (2×1) or large (2×2)
 src/components/     the shell's own pieces (the AI quota chip)
 src/data/           the shell's data: panels, workspaces, status, drawer
-plugins/            services the shell ships (started by the runner)
+services/           the services the shell ships (audio, network, media...): one
+                    Rust process, started by the runner
 types/tessela.d.ts  the framework API, for the editor
 ```
 
@@ -33,12 +34,36 @@ The launcher is built only from `@kit`, the same pieces as the bar: see
 From `../tessela`, inside `nix develop`:
 
 ```sh
+cargo build --release --manifest-path ../adwaita-shell/services/Cargo.toml   # once, and after changing services/
 tessela run ../adwaita-shell --dev        # below the desktop's bar, reserving nothing
 tessela run ../adwaita-shell --nested     # in a headless compositor of its own
 tessela run ../adwaita-shell --devtools   # then: tessela devtools --help
 ```
 
 Type-check: `nix shell nixpkgs#typescript --command tsc -p .`
+
+## Services
+
+`services/` builds one binary, `adwaita-services`, on tessela's Rust SDK
+(`../tessela/sdk/rust`). Each module serves its own socket (`audio.sock`,
+`network.sock`, ...) with the topics and methods `src/data` uses, all on one
+thread, and waits for events instead of polling where the system has them:
+
+| Service | Reads | Changes with |
+|---|---|---|
+| `audio` | `pw-dump --monitor` (every change, no polling) | `wpctl` |
+| `network` | NetworkManager and BlueZ on the system bus, when they signal | `nmcli`, `bluetoothctl` |
+| `notifications` | a D-Bus monitor on the session bus; history in `$XDG_STATE_HOME/adwaita-shell` | `CloseNotification` |
+| `media` | MPRIS players over D-Bus (properties, Seeked; the position while playing) | MPRIS methods |
+| `power` | power-profiles-daemon over D-Bus | its `ActiveProfile`; caffeine is a logind idle inhibitor |
+| `brightness` | sysfs, every 2 s | `brightnessctl` |
+| `agenda` | `~/.config/calcure/events.csv` (inotify) | |
+| `ai` | `ai-usage show`, every 5 min | |
+| `weather` | wttr.in, every 30 min (cached) | |
+
+The runner starts it (`[plugins.services]` in `tessela.toml`), waits for
+its sockets and restarts it if it dies. Tests: `cargo test --manifest-path
+services/Cargo.toml`.
 
 ## License
 
