@@ -19,7 +19,7 @@
   </description>
   <icon type="stock">io.github.fuleco.AdwaitaShell</icon>
   <launchable type="desktop-id">io.github.fuleco.AdwaitaShell.desktop</launchable>
-  <url type="homepage">https://example.invalid/adwaita-shell</url>
+  <url type="homepage">https://github.com/FulecoRafa/adwaita-shell</url>
   <content_rating type="oars-1.1"/>
   <releases>
     <release version="0.1.0" date="2026-10-13"/>

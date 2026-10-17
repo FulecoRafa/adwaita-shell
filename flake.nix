@@ -2,11 +2,9 @@
   description = "adwaita-shell — a desktop shell for Hyprland, as a tessela project";
 
   inputs = {
-    # The runner. A local checkout until tessela is published; pure evaluation
-    # works because it is locked to a commit. Once published, switch to e.g.
-    #   tessela.url = "github:<owner>/tessela";
-    # and run `nix flake lock --update-input tessela`.
-    tessela.url = "git+file:///home/fuleco/Dev/tessela";
+    # The runner, and the Rust SDK the services build on. For a local
+    # checkout: --override-input tessela git+file:///path/to/tessela
+    tessela.url = "github:FulecoRafa/tessela";
     nixpkgs.follows = "tessela/nixpkgs";
   };
 

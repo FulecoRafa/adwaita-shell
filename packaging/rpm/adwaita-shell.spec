@@ -36,7 +36,7 @@ License:        (MIT OR Apache-2.0) AND CC-BY-4.0 AND MIT AND %{shrink:
                 (Unlicense OR MIT)
                 }
 # Provisional: the project has no public home yet.
-URL:            https://example.invalid/adwaita-shell
+URL:            https://github.com/FulecoRafa/adwaita-shell
 Source0:        %{name}-%{version}.tar.gz
 # kit/components/Icon.tsx draws icons with the "Phosphor-Fill" font family.
 Source1:        https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/Phosphor-Fill.ttf

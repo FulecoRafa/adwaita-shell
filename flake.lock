@@ -27,17 +27,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791948937,
-        "narHash": "sha256-yOyMfx4tHcvetW2Vn0aodtY/5zAoferBGciViuUbtLQ=",
-        "ref": "refs/heads/master",
-        "rev": "e8af1f83563f8e58fca64c8e44dcc59e216a7c2a",
-        "revCount": 77,
-        "type": "git",
-        "url": "file:///home/fuleco/Dev/tessela"
+        "lastModified": 1791991861,
+        "narHash": "sha256-adQvYX2CMg3Bhu1LuMiIvWyjuvZGgY/qlsZTh+0jhSQ=",
+        "owner": "FulecoRafa",
+        "repo": "tessela",
+        "rev": "628272691106cf90a0e98210c216756a594d78cb",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/fuleco/Dev/tessela"
+        "owner": "FulecoRafa",
+        "repo": "tessela",
+        "type": "github"
       }
     }
   },

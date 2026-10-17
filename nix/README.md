@@ -12,11 +12,10 @@
 | `nixosModules.default` | `programs.adwaita-shell.enable` |
 | `checks.<system>` | the package (its build runs the services' tests), and `tsc` over the TSX |
 
-The `tessela` input is the local checkout (`git+file:///home/fuleco/Dev/tessela`),
-locked to a commit, so evaluation stays pure. After committing in tessela,
-`nix flake lock --update-input tessela` picks it up. The services build on
-the SDK (`sdk/rust`) from that same input. Once tessela is
-published, set `inputs.tessela.url = "github:<owner>/tessela"` and relock.
+The `tessela` input is `github:FulecoRafa/tessela`, locked to a commit; the
+services build on the SDK (`sdk/rust`) from that same input. Working on both
+at once: `--override-input tessela git+file:///path/to/tessela`, or
+`nix flake lock --update-input tessela` after pushing tessela.
 
 ## The package
 
@@ -55,7 +54,7 @@ share/licenses/adwaita-shell/LICENSE-{MIT,APACHE}
 
 ```nix
 # flake inputs
-adwaita-shell.url = "git+file:///home/fuleco/Dev/adwaita-shell";
+adwaita-shell.url = "github:FulecoRafa/adwaita-shell";
 
 # a home-manager module
 imports = [ inputs.adwaita-shell.homeManagerModules.default ];
